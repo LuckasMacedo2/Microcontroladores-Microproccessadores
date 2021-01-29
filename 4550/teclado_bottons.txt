@@ -1,0 +1,167 @@
+/*
+ * File:   newmain.c
+ * Author: Lucas MS
+ *
+ * Created on 9 de Junho de 2019, 11:51
+ */
+
+#include "configuracao.h"
+#include "LCD.h"
+
+
+#define C1 PORTBbits.RB0
+#define C2 PORTBbits.RB1
+#define C3 PORTBbits.RB2
+#define C4 PORTBbits.RB3
+
+#define L1 LATBbits.LATB4
+#define L2 LATBbits.LATB5
+#define L3 LATBbits.LATB6
+#define L4 LATBbits.LATB7
+
+void cfg(){
+    TRISB = 0b00001111;
+    
+    TRISD = 0;
+    
+    TRISC = 0;
+    
+    TRISE = 0;
+    
+    OSCCON=0b01100000;
+    
+    INTCON2bits.RBPU = 0;
+    
+    ADCON1 = 15;
+}
+
+int varrer(){
+    int valor = -1;
+    
+    L1 = 0;
+    L2 = 1;
+    L3 = 1;
+    L4 = 1;
+    
+    if (C1 == 0){
+        valor = 14;
+    }
+        if (C2 == 0){
+        valor = 13;
+    }
+    if (C3 == 0){
+        valor = 12;
+    }
+    if (C4 == 0){
+        valor = 11;
+    }
+    
+    L1 = 1;
+    L2 = 0;
+    L3 = 1;
+    L4 = 1;
+    
+    if (C1 == 0){
+        valor = 10;
+    }
+        if (C2 == 0){
+        valor = 9;
+    }
+    if (C3 == 0){
+        valor = 6;
+    }
+    if (C4 == 0){
+        valor = 3;
+    }
+    
+    L1 = 1;
+    L2 = 1;
+    L3 = 0;
+    L4 = 1;
+    
+    if (C1 == 0){
+        valor = 0;
+    }
+        if (C2 == 0){
+        valor = 8;
+    }
+    if (C3 == 0){
+        valor = 5;
+    }
+    if (C4 == 0){
+        valor = 2;
+    }
+    
+    L1 = 1;
+    L2 = 1;
+    L3 = 1;
+    L4 = 0;
+    
+    if (C1 == 0){
+        valor = 15;
+    }
+    if (C2 == 0){
+        valor = 7;
+    }
+    if (C3 == 0){
+        valor = 4;
+    }
+    if (C4 == 0){
+        valor = 1;
+    }
+    L1 = 1;
+    L2 = 1;
+    L3 = 1;
+    L4 = 1;
+    return valor;
+}
+
+#define LED LATCbits.LATC7
+
+void led(int n){
+    for(int i = 0; i < n; i ++){
+        LED = 1;
+        __delay_ms(100);
+        LED = 0;
+        __delay_ms(100);
+    }
+}
+
+void testa_led(){
+    if (C1 == 0){
+            led(3);
+        }
+        if (C2 == 0){
+            led(4);
+        }
+        if (C3 == 0){
+            led(5);
+        }
+        if (C4 == 0){
+            led(6);
+        }
+}
+void main(void) {
+    cfg();
+    inicializa_LCD();
+    
+    int x = -1;
+    //comando(LINHA1);
+    //imprimir_dados_LCD("TESTE...");
+    char c[3];
+    //comando(LINHA2);
+    
+    while(1){
+        
+        x = varrer();
+        if (x != -1)
+        {
+            limpar_LCD();
+            comando(LINHA1);
+            sprintf(c, "%i", x);
+            imprimir_dados_LCD(c);
+            __delay_ms(100);
+        }
+    }
+}
+

@@ -1,0 +1,121 @@
+#define C1 PORTBbits.RB0        // Coluna 1
+#define C2 PORTBbits.RB1        // Coluna 2
+#define C3 PORTBbits.RB2        // Coluna 3
+#define C4 PORTBbits.RB3        // Coluna 4
+
+#define L1 LATBbits.LATB4       // Linha 1
+#define L2 LATBbits.LATB5       // Linha 2
+#define L3 LATBbits.LATB6       // Linha 3
+#define L4 LATBbits.LATB7       // Linha 4
+
+/* Mapeamento do teclado
+ * Tecla    Valor retornado
+ * A            10
+ * B            11
+ * C            12
+ * D            15
+ * #            14
+ * *            13
+ * 0            0
+ * 1            1
+ * 2            2
+ * 3            3
+ * 4            4
+ * 5            5
+ * 6            6
+ * 7            7
+ * 8            8
+ * 9            9
+ */
+
+int varrer(){
+    /*
+     * Varre de baixo para cima, ja que as teclas 
+     * de confirma, cancela e continua estao mais a direita no teclado
+     * isto e, sao as teclas
+     * A = Confirma
+     * B = Continua
+     * C = Cancela
+     */
+    
+    int valor = -1;
+    
+    L1 = 0;
+    L2 = 1;
+    L3 = 1;
+    L4 = 1;
+    
+    if (C1 == 0){
+        valor = 15;
+    }
+    if (C2 == 0){
+        valor = 14;
+    }
+    if (C3 == 0){
+        valor = 0;
+    }
+    if (C4 == 0){
+        valor = 13;
+    }
+    
+    L1 = 1;
+    L2 = 0;
+    L3 = 1;
+    L4 = 1;
+    
+    if (C1 == 0){
+        valor = 12;
+    }
+    if (C2 == 0){
+        valor = 9;
+    }
+    if (C3 == 0){
+        valor = 8;
+    }
+    if (C4 == 0){
+        valor = 7;
+    }
+    
+    
+    L1 = 1;
+    L2 = 1;
+    L3 = 0;
+    L4 = 1;
+    
+    if (C1 == 0){
+        valor = 11;
+    }
+    if (C2 == 0){
+        valor = 6;
+    }
+    if (C3 == 0){
+        valor = 5;
+    }
+    if (C4 == 0){
+        valor = 4;
+    }
+    
+    L1 = 1;
+    L2 = 1;
+    L3 = 1;
+    L4 = 0;
+    
+    if (C1 == 0){
+        valor = 10;
+    }
+    if (C2 == 0){
+        valor = 3;
+    }
+    if (C3 == 0){
+        valor = 2;
+    }
+    if (C4 == 0){
+        valor = 1;
+    }
+  
+    L1 = 1;
+    L2 = 1;
+    L3 = 1;
+    L4 = 1;
+    return valor;
+}

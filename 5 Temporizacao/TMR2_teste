@@ -1,0 +1,133 @@
+#pragma config WDT = OFF
+#pragma config OSC = HS
+#pragma config MCLRE = ON
+#pragma config LVP = OFF
+
+#define _XTAL_FREQ 8000000
+
+#include <xc.h>
+
+/*
+ * Inverter o valor de um led a cada 10 ms com Timer2 
+ */
+
+// *************************** LCD ***************************************************
+#include <stdio.h>
+#define LINHA1 128
+#define LINHA2 192
+
+#define RS LATEbits.LATE2       // Indica se e dado ou instrucao
+#define E LATEbits.LATE1        // Pino que inicia o ciclo leitura/escrita
+//#define RW LATEbits.LATE2       // Indica se e leitura ou escrita
+
+void comando(int cmd){          // Executa um comando
+    RS = 0;                     // Indica que e uma instrucao
+    E = 1;                      // Pulso
+    LATD = cmd;                 // Envia o comando para o barramento de dados DB7:DB0
+    __delay_ms(2);
+    E = 0;                      // Fim do pulso
+}
+
+void limpar_LCD(){              // Limpa o LCD
+    comando(1);
+}
+
+void inicializa_LCD(){
+    E = 0;                      // Finaliza o ciclo de leitura escrita
+    RS = 0;                     // Indica uma instrucao
+    comando(0b00111100);        // Inicializa o display
+    comando(0b00001100);        // Liga o lcd
+    limpar_LCD();               // Limpa o LCD
+}
+
+void enviar_dados_LCD(int dado){    // Envia os dados para o LCD
+    RS = 1;                         // Indica que um dado sera escrito em DB7:DB0
+    E = 1;                          // Inicia o ciclo de escrita
+    LATD = dado;                    // Envia os dados para DB7:DB0
+    __delay_ms(20);                  // Espera
+    E = 0;                          // Finaliza o ciclo de escrita
+}
+
+void imprimir_dados_LCD(char dados[]){
+    int i = 0;                      // Contador
+    while(dados[i] != 0){
+        enviar_dados_LCD(dados[i]);
+        i++;
+    }
+}
+// *************************** LCD ***************************************************
+
+#define LED LATBbits.LATB0
+
+
+void cfg_Timer2(){
+    T2CON = 0b0101001; // Prescaler 1:4
+    TMR2 = 0;
+    PR2 = 249;
+    T2CONbits.TMR2ON = 1;   // Liga o Timer2
+    
+}
+/*
+void cfg_int(){
+    INTCONbits.GIE = 1; // Ativa interrupcoes
+    INTCONbits.GIEH = 1; // Ativa interrupcoes
+
+    INTCONbits.PEIE = 1;
+    PIE1bits.TMR2IE = 1;    // Ativa interrupcao em Timer2
+    PIR1bits.TMR2IF = 0;    // Reseta a flag
+}
+
+void __interrupt(high_priority) isr(){
+    if (PIR1bits.TMR2IF == 1){
+        LED = ~LED;
+        comando(LINHA2);
+        char v[16];
+        sprintf(v, "%i", TMR2);
+        imprimir_dados_LCD(v);
+        PIR1bits.TMR2IF = 0;
+    }
+}*/
+
+void main(){
+    TRISE = 0;
+    PORTE = 0;
+    LATE = 0;
+    
+    TRISD = 0;
+    PORTD = 0;
+    LATD = 0;
+    
+    TRISB = 0;
+    LATB = 0;
+    PORTB = 0;
+    
+    comando(LINHA1);
+    imprimir_dados_LCD("Timer2");
+    inicializa_LCD();
+
+    //cfg_int();
+    cfg_Timer2();
+    
+    while(1){
+        if (PR2 == TMR2){
+            LED = ~LED;
+            TMR2 = 0;
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
